@@ -1,0 +1,170 @@
+https://spark.apache.org/docs/2.1.0/sql-programming-guide.html 
+
+refer the whole html
+
+
+what is spark sessiona nd how to create it ?
+
+With a SparkSession, applications can create DataFrames from an existing RDD, from a Hive table, or from Spark data sources.
+
+
+spark sql 
+SQL
+One use of Spark SQL is to execute SQL queries. Spark SQL can also be used to read data 
+
+Datasets and DataFrames
+A Dataset is a distributed collection of data. Dataset is a new interface added in Spark 1.6 that provides the benefits of RDDs (strong typing, ability to use powerful lambda functions) with the benefits of Spark SQL’s optimized execution engine. A Dataset can be constructed from JVM objects and then manipulated using functional transformations (map, flatMap, filter, etc.). 
+
+Python does not have the support for the Dataset API. But due to Python’s dynamic nature, many of the benefits of the Dataset API are already available 
+
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession \
+    .builder \
+    .appName("Python Spark SQL basic example") \
+    .config("spark.some.config.option", "some-value") \
+    .getOrCreate()
+
+
+As an example, the following creates a DataFrame based on the content of a JSON file:
+
+# spark is an existing SparkSession
+df = spark.read.json("examples/src/main/resources/people.json")
+# Displays the content of the DataFrame to stdout
+df.show()
+# +----+-------+
+# | age|   name|
+# +----+-------+
+# |null|Michael|
+# |  30|   Andy|
+# |  19| Justin|
+# +----+-------+
+
+
+Here we include some basic examples of structured data processing using Datasets:
+
+# spark, df are from the previous example
+# Print the schema in a tree format
+df.printSchema()
+# root
+# |-- age: long (nullable = true)
+# |-- name: string (nullable = true)
+
+# Select only the "name" column
+df.select("name").show()
+# +-------+
+# |   name|
+# +-------+
+# |Michael|
+# |   Andy|
+# | Justin|
+# +-------+
+
+# Select everybody, but increment the age by 1
+df.select(df['name'], df['age'] + 1).show()
+# +-------+---------+
+# |   name|(age + 1)|
+# +-------+---------+
+# |Michael|     null|
+# |   Andy|       31|
+# | Justin|       20|
+# +-------+---------+
+
+# Select people older than 21
+df.filter(df['age'] > 21).show()
+# +---+----+
+# |age|name|
+# +---+----+
+# | 30|Andy|
+# +---+----+
+
+# Count people by age
+df.groupBy("age").count().show()
+# +----+-----+
+# | age|count|
+# +----+-----+
+# |  19|    1|
+# |null|    1|
+# |  30|    1|
+# +----+-----+
+
+Running SQL Queries Programmatically
+
+The sql function on a SparkSession enables applications to run SQL queries programmatically and returns the result as a DataFrame.
+
+Interoperating with RDDs
+Spark SQL supports two different methods for converting existing RDDs into Datasets. 
+
+- Inferring the Schema Using Reflection   
+        Spark SQL can convert an RDD of Row objects to a DataFrame, inferring the datatypes. Rows are constructed by passing a list of key/value pairs as kwargs to the Row class. The keys of this list define the column names of the table, and the types are inferred by sampling the whole dataset, similar to the inference that is performed on JSON files.
+from pyspark.sql import Row
+
+sc = spark.sparkContext
+
+# Load a text file and convert each line to a Row.
+lines = sc.textFile("examples/src/main/resources/people.txt")
+parts = lines.map(lambda l: l.split(","))
+people = parts.map(lambda p: Row(name=p[0], age=int(p[1])))
+
+# Infer the schema, and register the DataFrame as a table.
+schemaPeople = spark.createDataFrame(people)
+schemaPeople.createOrReplaceTempView("people")
+
+# SQL can be run over DataFrames that have been registered as a table.
+teenagers = spark.sql("SELECT name FROM people WHERE age >= 13 AND age <= 19")
+
+# The results of SQL queries are Dataframe objects.
+# rdd returns the content as an :class:`pyspark.RDD` of :class:`Row`.
+teenNames = teenagers.rdd.map(lambda p: "Name: " + p.name).collect()
+for name in teenNames:
+    print(name)
+# Name: Justin
+
+
+- Programmatically Specifying the Schema
+    When a dictionary of kwargs cannot be defined ahead of time (for example, the structure of records is encoded in a string, or a text dataset will be parsed and fields will be projected differently for different users), a DataFrame can be created programmatically with three steps.
+
+    Create an RDD of tuples or lists from the original RDD;
+    Create the schema represented by a StructType matching the structure of tuples or lists in the RDD created in the step 1.
+    Apply the schema to the RDD via createDataFrame method provided by SparkSession.
+
+For example:
+
+# Import data types
+from pyspark.sql.types import *
+
+sc = spark.sparkContext
+
+# Load a text file and convert each line to a Row.
+lines = sc.textFile("examples/src/main/resources/people.txt")
+parts = lines.map(lambda l: l.split(","))
+# Each line is converted to a tuple.
+people = parts.map(lambda p: (p[0], p[1].strip()))
+
+# The schema is encoded in a string.
+schemaString = "name age"
+
+fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
+schema = StructType(fields)
+
+# Apply the schema to the RDD.
+schemaPeople = spark.createDataFrame(people, schema)
+
+# Creates a temporary view using the DataFrame
+schemaPeople.createOrReplaceTempView("people")
+
+# Creates a temporary view using the DataFrame
+schemaPeople.createOrReplaceTempView("people")
+
+# SQL can be run over DataFrames that have been registered as a table.
+results = spark.sql("SELECT name FROM people")
+
+results.show()
+# +-------+
+# |   name|
+# +-------+
+# |Michael|
+# |   Andy|
+# | Justin|
+# +-------+

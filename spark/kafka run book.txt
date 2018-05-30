@@ -1,0 +1,44 @@
+cd /usr/local/Cellar/kafka/1.1.0/libexec/
+
+#start zookeeper
+
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+#start kafka server
+bin/kafka-server-start.sh config/server.properties
+
+
+#create topic
+bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic trump
+
+
+#create producer 
+my code for producer TwtStreamToKafka.py
+
+#You can test that topics are getting published in Kafka by using:
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic trump --from-beginning
+
+#run spark streaming to stream from kafka
+spark-submit — packages org.apache.spark:spark-streaming-kafka-0–8_2.11:2.0.0 SparkStreamingFromKafka.py localhost:9092 trump
+
+
+
+
+Launching Applications with spark-submit
+Once a user application is bundled, it can be launched using the bin/spark-submit script. This script takes care of setting up the classpath with Spark and its dependencies, and can support different cluster managers and deploy modes that Spark supports:
+
+./bin/spark-submit \
+  --class <main-class> \
+  --master <master-url> \
+  --deploy-mode <deploy-mode> \
+  --conf <key>=<value> \
+  ... # other options
+  <application-jar> \
+  [application-arguments]
+      
+      
+ERROR INSTALLING 
+
+JAVA_HOME to be home not bin
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_162.jdk/Contents/Home/
+export PATH=$SPARK_HOME/bin:$PATH
