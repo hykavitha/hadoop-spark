@@ -17,7 +17,8 @@ if __name__ == "__main__":
     #streaming context
     ssc = StreamingContext(sc, 2)
     #setting the topic
-    brokers, topic = sys.argv[1:]
+    brokers = 'localhost:9092'
+    topic = 'trump'
     #setting up stream
     
     #KafkaUtils.createDirectStream creates a org.apache.spark.streaming.dstream.DStream.

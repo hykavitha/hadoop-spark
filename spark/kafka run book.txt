@@ -7,9 +7,18 @@ bin/zookeeper-server-start.sh config/zookeeper.properties
 #start kafka server
 bin/kafka-server-start.sh config/server.properties
 
+Step 3: Create a topic
 
 #create topic
 bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic trump
+
+#another example
+Let's create a topic named "test" with a single partition and only one replica:
+> bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic test
+We can now see that topic if we run the list topic command:
+> bin/kafka-topics.sh --list --zookeeper localhost:2181
+test
+Alternatively, instead of manually creating topics you can also configure your brokers to auto-create topics when a non-existent topic is published to.
 
 
 #create producer 
@@ -19,7 +28,7 @@ my code for producer TwtStreamToKafka.py
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic trump --from-beginning
 
 #run spark streaming to stream from kafka
-spark-submit — packages org.apache.spark:spark-streaming-kafka-0–8_2.11:2.0.0 SparkStreamingFromKafka.py localhost:9092 trump
+spark-submit --packages org.apache.spark:spark-streaming-kafka-0–8_2.11:2.0.0 SparkStreamingFromKafka.py localhost:9092 trump
 
 
 
