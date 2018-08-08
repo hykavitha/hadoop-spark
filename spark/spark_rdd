@@ -1,0 +1,93 @@
+What is a partition in spark?
+ Apache Spark allows developers to run multiple tasks in parallel across hundreds of machines in a cluster or across multiple cores on a desktop. All thanks to the primary interaction point of apache spark RDDs. Under the hood, these RDDs are stored in partitions and operated in parallel. 
+ 
+
+A partition in spark is an atomic chunk of data (logical division of data) stored on a node in the cluster
+Partitions are basic units of parallelism in Apache Spark. RDDs in Apache Spark are collection of partitions.
+
+Types of Partitioning in Apache Spark
+Hash Partitioning in Spark
+Range Partitioning in Spark
+
+
+Spark manages data using partitions that helps parallelize distributed data processing with 
+minimal network traffic for sending data between executors.
+By default, Spark tries to read data into an RDD from the nodes that are close to it. 
+Since Spark usually accesses distributed partitioned data, to optimize transformation operations 
+it creates partitions to hold the data chunks.
+There is a one-to-one correspondence between how data is laid out in data storage 
+like HDFS or Cassandra (it is partitioned for the same reasons).
+Features:
+size
+
+number
+partitioning scheme
+node distribution
+repartitioning
+
+
+By default, a partition is created for each HDFS partition, which by default is 64MB (from Spark’s Programming Guide).
+RDDs get partitioned automatically without programmer intervention. However, there are times when you’d like to adjust 
+the size and number of partitions or the partitioning scheme according to the needs of your application.
+
+When a stage executes, you can see the number of partitions for a given stage in the Spark UI.
+Start spark-shell and see it yourself!
+
+scala> sc.parallelize(1 to 100).count
+res0: Long = 100
+
+https://jaceklaskowski.gitbooks.io/mastering-apache-spark/images/spark-partitions-ui-stages.png
+
+The reason for 8 Tasks in Total is that I’m on a 8-core laptop and by default 
+the number of partitions is the number of all available cores.
+
+command to check cores : sysctl -n hw.ncpu
+
+You can always ask for the number of partitions using partitions method of a RDD:
+
+scala> sc.parallelize(1 to 100, 2).count
+res1: Long = 100
+
+
+You can always ask for the number of partitions using partitions method of a RDD:
+
+
+scala>  val ints = sc.parallelize(1 to 100, 4)
+ints: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[2] at parallelize at <console>:24
+
+scala> ints.partitions.size
+res2: Int = 4
+
+Question:
+Spark can only run 1 concurrent task for every partition of an RDD, up to the number of cores in your cluster. 
+So if you have a cluster with 50 cores, you want your RDDs to at least have 50 partitions (and probably 2-3x times that).
+
+
+When creating an RDD by reading a file using rdd = SparkContext().textFile("hdfs://…​/file.txt") 
+the number of partitions may be smaller. 
+
+
+rdd = sc.textFile("hdfs://…​/file.txt", 400), where 400 is the number of partitions. In this case, 
+the partitioning makes for 400 splits that would be done by the Hadoop’s TextInputFormat, not Spark and it would work much faster.
+It’s also that the code spawns 400 concurrent tasks to try to load file.txt directly into 400 partitions.
+
+Question
+Some operations, e.g. map, flatMap, filter, don’t preserve partitioning.
+map, flatMap, filter operations apply a function to every partition.
+
+
+Repartitioning RDD — repartition Transformation
+repartition(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T]
+repartition is coalesce with numPartitions and shuffle enabled.
+With the following computation you can see that repartition(5) causes 5 tasks to be started using NODE_LOCAL data locality.
+
+Repartitioning RDD with zip files - Spark disables splitting for compressed files and creates RDDs with only 1 partition.
+rdd = sc.textFile('demo.gz')
+rdd = rdd.repartition(100)
+
+coalesce Transformation
+coalesce(numPartitions: Int, shuffle: Boolean = false)(implicit ord: Ordering[T] = null): RDD[T]
+The coalesce transformation is used to change the number of partitions. 
+
+
+
