@@ -44,7 +44,11 @@ Once a user application is bundled, it can be launched using the bin/spark-submi
   ... # other options
   <application-jar> \
   [application-arguments]
-      
+  
+  
+The command that i use to run the script is:
+
+bin/spark-submit — jars jars/spark-streaming-kafka-0–8-assembly_2.11–2.3.1.jar examples/src/main/python/streaming/kafkatest.py localhost:2181 test7
       
 ERROR INSTALLING 
 
