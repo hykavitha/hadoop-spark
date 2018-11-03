@@ -1,0 +1,28 @@
+
+
+https://medium.com/@areeves9/cassandras-gossip-on-os-x-single-node-installation-of-apache-cassandra-on-mac-634e6729fad6
+
+mkdir -p ~/opt/packages/cassandra/
+
+curl -O http://www-us.apache.org/dist/cassandra/3.5/apache-cassandra-3.5-bin.tar.gz
+tar xzvf apache-cassandra-3.5-bin.tar.gz
+
+ln -s ~/opt/packages/cassandra/apache-cassandra-3.5 ~/opt/cassandra
+
+Now add the following to the bash profile file.
+# Cassandra
+if [ -d "$HOME/opt/cassandra" ]; then
+    export PATH="$PATH:$HOME/opt/cassandra/bin"
+fi
+
+Source your bash profile.
+source ~/.bash_profile
+
+Verify Cassandra installation.
+cassandra -v
+
+Now we will start the Cassandra server. We will be using the non-daemon process which will allow us to see output to the terminal.
+cassandra -f
+If all goes well you should see something like this:
+
+
