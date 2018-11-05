@@ -30,6 +30,10 @@ object DataStructInterviewQuestion {
     }
     println("--------------")
     map1.foreach(println)
+//    this returns me 
+    //(2,List(20, 200))
+   //(1,List(10, 100))
+
     return map1
   }
   
@@ -41,6 +45,9 @@ object DataStructInterviewQuestion {
      
      val list_tuple = List((1, 10) ,(1,100), (2,20), (2,200) )
     getKeyValuePairs(list_tuple)
+     // returns
+     //(2,List(20, 200))
+     //(1,List(10, 100))
    
    }
   
