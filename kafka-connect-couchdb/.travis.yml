@@ -1,0 +1,14 @@
+language: java
+sudo: false
+jdk: oraclejdk8
+cache:
+  directories:
+  - "$HOME/.m2"
+env:
+  global:
+  - DEPLOY_DIR="`pwd`/deploy"
+script: mvn clean verify
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+- "$DEPLOY_DIR/before-deploy.sh"
+- "$DEPLOY_DIR/deploy.sh"
