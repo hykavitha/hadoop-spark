@@ -1,4 +1,4 @@
-package com.loyalty.kafka.consumer;
+package com.loyalty.kafka.cli;
 
 
 import java.util.Collections;

@@ -1,4 +1,4 @@
-package com.loyalty.kafka.producer;
+package com.loyalty.kafka.cli;
 
 import java.math.BigInteger;
 import java.util.HashMap;

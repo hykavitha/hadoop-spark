@@ -7,8 +7,8 @@ public interface IKafkaConstants {
 	
 	public static String CLIENT_ID="client1";
 	
-	public static String TOPIC_NAME_1="test_1";
-	public static String TOPIC_NAME_2="test_2";
+	public static String TOPIC_NAME_1="topic-getlink";
+	public static String TOPIC_NAME_2="topic-returnlink";
 
 	public static String GROUP_ID_CONFIG="consumerGroup10";
 	

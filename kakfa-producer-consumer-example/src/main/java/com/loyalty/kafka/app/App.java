@@ -18,16 +18,19 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 
 import com.loyalty.kafka.constants.IKafkaConstants;
-import com.loyalty.kafka.consumer.ConsumerCreator;
-import com.loyalty.kafka.producer.ProducerCreator;
+import com.loyalty.kafka.couchbase.CBQuery;
+import com.loyalty.kafka.cli.ConsumerCreator;
+import com.loyalty.kafka.cli.ProducerCreator;
 
 public class App {
+	public  static CBQuery cb_obj = null;
     public static void main(String[] args) {
+    	cb_obj = new CBQuery();
     	int sequenceId = 1;
     	//ProducerCreator.runProducer(IKafkaConstants.TOPIC_NAME_1, sequenceId);
-//  	runConsumerProducer();
-    	boolean isProduce = false ;
-    	runConsumer(IKafkaConstants.TOPIC_NAME_2, isProduce);
+    	runConsumerProducer();
+//    	boolean isProduce = false ;
+//    	runConsumer(IKafkaConstants.TOPIC_NAME_2, isProduce);
     }
    
     
@@ -45,16 +48,33 @@ public class App {
         
         while(iterator.hasNext()){
               record = (ConsumerRecord<Long, String>) iterator.next();
-              String cid =  new String(record.headers().lastHeader("CID").value());
-              
+                            
+              String cid = "1";
+              try{
+            	  cid =  new String(record.headers().lastHeader("CID").value());
+              }catch (Exception e){
+            	  System.err.println("Exception at CID");
+              }
               System.out.println(record.headers());
-              int sequenceId = fromByteArray(record.headers().lastHeader("sequenceId").value()); 
+             
+              int sequenceId = 0 ;
+              try{
+               sequenceId = fromByteArray(record.headers().lastHeader("sequenceId").value()); 
+              } catch (Exception e){
+            	  System.err.println("Exception at sequenceId");
+              }
+              
               System.out.printf("Message Received ==>> topic = %s, cid =%s ,sequenceId = %s, message = %s, \n", 
             		  record.topic(),cid,sequenceId, record.value());
+              
+              System.out.printf("Message Received Value is ==>> %s, \n", 
+            		  record.value());
+              
               
               System.out.printf("Message Received ==>> timestamp = %s, partition = %s, offset = %d\n", 
             		 record.partition(), record.timestamp(), record.offset());
                 
+              cb_obj.getId(record.value());
 
           if( isProduce) {
             	ProducerCreator.produceforThisCID(IKafkaConstants.TOPIC_NAME_2 , record.value(), cid, sequenceId);
@@ -69,7 +89,9 @@ public class App {
 
 
 
-
+    /*
+     * run this consumer 
+     */
 	static void runConsumer(String topic, Boolean isProduce) {
        
     	Consumer<String, String> consumer = ConsumerCreator.createConsumer();

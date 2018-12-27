@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--~
+    ~ Copyright 2017 Couchbase, Inc.
+    ~
+    ~ Licensed under the Apache License, Version 2.0 (the "License");
+    ~ you may not use this file except in compliance with the License.
+    ~ You may obtain a copy of the License at
+    ~
+    ~     http://www.apache.org/licenses/LICENSE-2.0
+    ~
+    ~ Unless required by applicable law or agreed to in writing, software
+    ~ distributed under the License is distributed on an "AS IS" BASIS,
+    ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    ~ See the License for the specific language governing permissions and
+    ~ limitations under the License.
+    ~-->
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.couchbase.client</groupId>
+    <artifactId>kafka-connect-couchbase</artifactId>
+    <packaging>jar</packaging>
+    <version>3.4.0</version>
+    <name>Kafka Connector for Couchbase</name>
+    <organization>
+        <name>Couchbase, Inc.</name>
+        <url>http://couchbase.com</url>
+    </organization>
+    <url>http://couchbase.com</url>
+    <description>
+        A Kafka Connect Couchbase connector for copying data between Kafka and Couchbase Server.
+    </description>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com/couchbase/kafka-connect-couchbase.git</connection>
+        <developerConnection>scm:git:git@github.com:couchbase/kafka-connect-couchbase.git</developerConnection>
+        <url>https://github.com/couchbase/kafka-connect-couchbase</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>Couchbase JIRA</system>
+        <url>http://www.couchbase.com/issues/browse/KAFKAC</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>avsej</id>
+            <name>Sergey Avseyev</name>
+            <email>sergey@couchbase.com</email>
+        </developer>
+        <developer>
+            <id>dnault</id>
+            <name>David Nault</name>
+            <email>david.nault@couchbase.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <java-compat.version>1.6</java-compat.version>
+        <confluent.version>3.1.1</confluent.version>
+        <kafka-connect-api.version>0.10.1.1</kafka-connect-api.version>
+        <kafka-connect-json.version>0.10.1.1</kafka-connect-json.version>
+        <kafka-streams.version>0.10.1.1</kafka-streams.version>
+        <dcp-client.version>0.20.0</dcp-client.version>
+        <java-client.version>2.6.1</java-client.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
+        <junit.version>4.12</junit.version>
+        <mysql.version>5.1.6</mysql.version>
+        <mockito.version>1.10.19</mockito.version>
+        <dist-archive-name>${project.artifactId}-${project.version}.zip</dist-archive-name>
+
+        <!-- Don't sign artifacts unless the 'stage' or 'release' profile is active -->
+        <gpg.skip>true</gpg.skip>
+
+        <!-- When deploying, don't promote artifacts from staging repository unless 'release' profile is active -->
+        <autoReleaseAfterClose>false</autoReleaseAfterClose>
+
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <name>Confluent</name>
+            <url>${confluent.maven.repo}</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-api</artifactId>
+            <version>${kafka-connect-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>connect-json</artifactId>
+            <version>${kafka-connect-json.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-connect-avro-converter</artifactId>
+            <version>${confluent.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.couchbase.client</groupId>
+            <artifactId>dcp-client</artifactId>
+            <version>${dcp-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.couchbase.client</groupId>
+            <artifactId>java-client</artifactId>
+            <version>${java-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-streams</artifactId>
+            <version>${kafka-streams.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <source>${java-compat.version}</source>
+                    <target>${java-compat.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+
+                    <!-- Don't deploy the ZIP archive to Maven Central -->
+                    <attach>false</attach>
+
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>src/assembly/dist.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.18.1</version>
+                <configuration>
+                    <useSystemClassLoader>false</useSystemClassLoader>
+                    <argLine>-Djava.awt.headless=true</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>${autoReleaseAfterClose}</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.bazaarvoice.maven.plugins</groupId>
+                <artifactId>s3-upload-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>s3-upload</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <bucketName>packages.couchbase.com</bucketName>
+                    <source>${project.build.directory}/${dist-archive-name}</source>
+                    <destination>clients/kafka/${project.version}/${dist-archive-name}</destination>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <gpg.skip>false</gpg.skip>
+                <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </properties>
+        </profile>
+        <profile>
+            <id>stage</id>
+            <properties>
+                <gpg.skip>false</gpg.skip>
+            </properties>
+        </profile>
+    </profiles>
+</project>
