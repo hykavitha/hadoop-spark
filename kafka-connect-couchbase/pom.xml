@@ -78,7 +78,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <confluent.maven.repo>http://packages.confluent.io/maven/</confluent.maven.repo>
         <junit.version>4.12</junit.version>
-        <mysql.version>8.0.16</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <mockito.version>1.10.19</mockito.version>
         <dist-archive-name>${project.artifactId}-${project.version}.zip</dist-archive-name>
 
